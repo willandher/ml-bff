@@ -4,6 +4,8 @@ WORKDIR /app/
 
 COPY . .
 
+RUN  gradle build  -Dquarkus.package.type=uber-jar
+
 RUN chmod +x entrypoint.sh
 
 EXPOSE 8080
