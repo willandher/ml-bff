@@ -12,6 +12,7 @@ import com.ml.bff.user.service.UserService;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,45 +53,7 @@ public class BffPurcharseServiceImpl implements BffPurcharseService {
      * @return
      */
 
-    public Future<BffPurcharseInfo> getPurcharseByUserId(Integer id, Integer limit, Integer offset){
-        Promise<BffPurcharseInfo> bffPurcharseInfoPromise = Promise.promise();
-        userService.getPurcharseByUser(id, limit, offset).onSuccess(buffer -> {
-            var purcharseInfo = Json.decodeValue(buffer, PurcharseInfo.class);
-            List<Future> transactionList = new ArrayList<>();
-            List<BffPurcharseData> bffPurcharseData = purcharseInfo.getData().parallelStream().map(purcharseData -> {
-                transactionList.add(shipmentService.getShippmentById(purcharseData.getId_envio()));
-                transactionList.add(paymentService.getPaymentById(purcharseData.getId_transaccion()));
-                return bffPurcharseDataFunction.apply(purcharseData);
-            }).collect(Collectors.toList());
-            CompositeFuture.all(transactionList).onSuccess(ar ->{
-                ar.list().forEach(ab ->{
-                    if( ab instanceof BffShipment){
-                        bffPurcharseData.stream()
-                                .filter(filter -> filter.getId_envio().equals(((BffShipment) ab).getId_envio()))
-                                .map(filtered -> {
-                                    filtered.setShipment((BffShipment) ab);
-                                return filtered;
-                                }).collect(Collectors.toList());
-                    }
-                    else if ( ab instanceof BffPayment){
-                        bffPurcharseData.stream()
-                                .filter(filter -> filter.getId_transaccion().equals(((BffPayment) ab).getId_transaccion()))
-                                .map(filtered -> {
-                                    filtered.setTransaction((BffPayment) ab);
-                                    return filtered;
-                                }).collect(Collectors.toList());
-                    }
-                });
-            bffPurcharseInfoPromise.complete(
-                    BffPurcharseInfo.builder()
-                            .limit(purcharseInfo.getLimit())
-                            .offset(purcharseInfo.getOffset())
-                            .total(purcharseInfo.getTotal())
-                            .data(bffPurcharseData)
-                            .build()
-            );
-            });
-        }).onFailure(bffPurcharseInfoPromise::fail);
-        return bffPurcharseInfoPromise.future();
+    public Future<Buffer> getPurcharseByUserId(Integer id, Integer limit, Integer offset){
+        return userService.getPurcharseByUser(id, limit, offset);
     }
 }

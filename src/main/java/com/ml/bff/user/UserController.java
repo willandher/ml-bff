@@ -23,7 +23,7 @@ public class UserController {
 
     private static final String API_ML_GET_USER = "/users/{id}";
     private static final String API_ML_GET_USER_LEVEL = "/users/levels/{id}";
-    private static final String API_ML_GET_USER_RESTRICTION = API_ML_GET_USER + "/resctrictions";
+    private static final String API_ML_GET_USER_RESTRICTION = API_ML_GET_USER + "/restrictions";
 
     @Path(API_ML_GET_USER)
     @GET
