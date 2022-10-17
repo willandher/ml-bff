@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Future<Buffer> getUserRestrictions(Integer id) {
+        System.out.println("veamos el id  del usuario");
         return webClientService.requestGetCircuitBreaker(this.port,this.host,"/api/v1/users/"+id+"/restrictions",false);
     }
 

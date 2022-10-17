@@ -30,7 +30,7 @@ public class PurcharseController {
     @Path(API_ML_GET_USER_PURCHARSE)
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<BffPurcharseInfo> getPurcharseByUserId(
+    public Uni<Buffer> getPurcharseByUserId(
             @PathParam("id") Integer id,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @DefaultValue("0") @QueryParam("offset") Integer offset){
